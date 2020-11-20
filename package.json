@@ -1,6 +1,6 @@
 {
   "name": "formatters-python",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "main": "./src/formatters.js",
   "license": "MIT",
   "repository": "https://github.com/utkarshgupta137/atom-formatters-python",
