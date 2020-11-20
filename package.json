@@ -1,0 +1,54 @@
+{
+  "name": "formatters-python",
+  "version": "0.0.0",
+  "main": "./src/formatters.js",
+  "license": "MIT",
+  "repository": "https://github.com/utkarshgupta137/atom-formatters-python",
+  "description": "Format Python code using autopep8, black, isort, or yapf (or all)",
+  "keywords": [
+    "apm",
+    "atom",
+    "autopep8",
+    "beautifier",
+    "beautify",
+    "black",
+    "fmt",
+    "format",
+    "formatter",
+    "formatters",
+    "isort",
+    "pep8",
+    "prettify",
+    "pretty",
+    "pycodestyle",
+    "pydocstyle",
+    "python",
+    "yapf"
+  ],
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  },
+  "consumedServices": {
+    "busy-signal": {
+      "versions": {
+        "^1.0.0": "consumeBusySignal"
+      }
+    },
+    "status-bar": {
+      "versions": {
+        "^1.0.0": "consumeStatusBar"
+      }
+    }
+  },
+  "dependencies": {
+    "find-up": "^5.0.0",
+    "untildify": "^4.0.0",
+    "valid-filename": "^3.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.13.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-atomic": "^1.5.1",
+    "eslint-plugin-import": "^2.22.1"
+  }
+}

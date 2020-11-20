@@ -1,0 +1,6 @@
+{
+  "atom-workspace": {
+    "ctrl-alt-p": "formatters-python:format",
+    "ctrl-alt-shift-p": "formatters-python:toggle-format-on-save"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "extends": ["eslint-config-airbnb-base", "eslint-config-atomic"],
+  "ignorePatterns": ["dist/", "node_modules/"],
+  "rules": {
+    "import/no-unresolved": [
+      "error",
+      { "commonjs": true, "caseSensitive": true, "ignore": ["atom"] }
+    ]
+  }
+}

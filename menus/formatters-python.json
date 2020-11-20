@@ -1,0 +1,38 @@
+{
+  "menu": [
+    {
+      "label": "Packages",
+      "submenu": [
+        {
+          "label": "formatters-python",
+          "submenu": [
+            {
+              "label": "Run autopep8",
+              "command": "formatters-python:autopep8"
+            },
+            {
+              "label": "Run black",
+              "command": "formatters-python:black"
+            },
+            {
+              "label": "Run isort",
+              "command": "formatters-python:isort"
+            },
+            {
+              "label": "Run yapf",
+              "command": "formatters-python:yapf"
+            },
+            {
+              "label": "Run formatters",
+              "command": "formatters-python:format"
+            },
+            {
+              "label": "Toggle auto-format on save",
+              "command": "formatters-python:toggle-format-on-save"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
