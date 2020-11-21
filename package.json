@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "./src/formatters.js",
   "license": "MIT",
+  "author": "Utkarsh Gupta <utkarshgupta137@gmail.com>",
   "repository": "https://github.com/utkarshgupta137/atom-formatters-python",
   "description": "Format Python code using autopep8, black, isort, or yapf (or all)",
   "keywords": [
@@ -28,6 +29,16 @@
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
   },
+  "dependencies": {
+    "find-up": "^5.0.0",
+    "untildify": "^4.0.0",
+    "valid-filename": "^3.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.13.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-atomic": "^1.5.1"
+  },
   "consumedServices": {
     "busy-signal": {
       "versions": {
@@ -39,16 +50,5 @@
         "^1.0.0": "consumeStatusBar"
       }
     }
-  },
-  "dependencies": {
-    "find-up": "^5.0.0",
-    "untildify": "^4.0.0",
-    "valid-filename": "^3.1.0"
-  },
-  "devDependencies": {
-    "eslint": "^7.13.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-config-atomic": "^1.5.1",
-    "eslint-plugin-import": "^2.22.1"
   }
 }
