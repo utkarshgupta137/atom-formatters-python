@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const fs = require("fs");
 const untildify = require("untildify");
 const validFilename = require("valid-filename");
@@ -59,7 +60,7 @@ class Formatter {
       return;
     }
     if (!binPath) {
-      this.binPath = null;
+      this.binPath = "";
       return;
     }
 
@@ -70,7 +71,7 @@ class Formatter {
         `'${binPath}' not found or not executable.`,
         `Invalid binary path for ${this.name}`
       );
-      this.binPath = null;
+      this.binPath = "";
     }
   };
 
@@ -79,13 +80,13 @@ class Formatter {
   };
 
   setLocalConfigs = (value) => {
-    const localConfigs = value.filter(Boolean);
-    if (localConfigs === this.localConfigs) {
+    const localConfigs = _.compact(value);
+    if (_.isEqual(localConfigs, this.localConfigs)) {
       return;
     }
     this.localConfigPathCache.clear();
-    if (!localConfigs) {
-      this.localConfigs = null;
+    if (_.isEmpty(localConfigs)) {
+      this.localConfigs = [];
       return;
     }
 
@@ -101,7 +102,7 @@ class Formatter {
         return true;
       })
     ) {
-      this.localConfigs = null;
+      this.localConfigs = [];
     } else {
       this.localConfigs = localConfigs;
     }
@@ -113,7 +114,7 @@ class Formatter {
       return;
     }
     if (!globalConfig) {
-      this.globalConfig = null;
+      this.globalConfig = "";
       return;
     }
 
@@ -124,13 +125,13 @@ class Formatter {
         `'${globalConfig}' not found or not readable.`,
         `Invalid global config path for ${this.name}`
       );
-      this.globalConfig = null;
+      this.globalConfig = "";
     }
   };
 
   getLocalConfigPath(filePath) {
-    if (!this.localConfigs) {
-      return null;
+    if (_.isEmpty(this.localConfigs)) {
+      return "";
     }
     if (this.localConfigPathCache.has(filePath)) {
       return this.localConfigPathCache.get(filePath);

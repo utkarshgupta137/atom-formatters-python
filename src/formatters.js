@@ -1,3 +1,5 @@
+const _ = require("lodash");
+
 const { CompositeDisposable } = require("atom");
 
 const { Formatter } = require("./formatter.js");
@@ -53,10 +55,10 @@ class Formatters {
         config.toggle("onSave.enabled");
       }),
       config.addCommand("format", () => {
-        if (this.formatOrder) {
-          this.format(atom.workspace.getActiveTextEditor(), this.formatOrder);
-        } else {
+        if (_.isEmpty(this.formatOrder)) {
           helpers.handleError(null, "Format order not defined");
+        } else {
+          this.format(atom.workspace.getActiveTextEditor(), this.formatOrder);
         }
       }),
       atom.workspace.observeTextEditors((editor) => {
@@ -64,10 +66,10 @@ class Formatters {
           this.subscriptions.add(
             editor.buffer.onDidSave(() => {
               if (config.get("onSave.enabled")) {
-                if (this.saveOrder) {
-                  this.format(editor, this.saveOrder, { buffer: false });
-                } else {
+                if (_.isEmpty(this.saveOrder)) {
                   helpers.handleError(null, "Format on save order not defined");
+                } else {
+                  this.format(editor, this.saveOrder, { buffer: false });
                 }
               }
             })
@@ -106,11 +108,11 @@ class Formatters {
   }
 
   setFormatOrder = (value) => {
-    const formatOrder = value.filter(Boolean);
-    if (formatOrder === this.formatOrder) {
+    const formatOrder = _.compact(value);
+    if (_.isEqual(formatOrder, this.formatOrder)) {
       return;
     }
-    if (!formatOrder) {
+    if (_.isEmpty(formatOrder)) {
       this.formatOrder = [];
       return;
     }
@@ -136,11 +138,11 @@ class Formatters {
   };
 
   setSaveOrder = (value) => {
-    const saveOrder = value.filter(Boolean);
-    if (saveOrder === this.saveOrder) {
+    const saveOrder = _.compact(value);
+    if (_.isEqual(saveOrder, this.saveOrder)) {
       return;
     }
-    if (!saveOrder) {
+    if (_.isEmpty(saveOrder)) {
       this.saveOrder = [];
       return;
     }
@@ -166,7 +168,7 @@ class Formatters {
   };
 
   format(editor, formatters, { buffer = true } = {}) {
-    if (formatters.length > 0) {
+    if (!_.isEmpty(formatters)) {
       this.formatters.get(formatters[0]).format(editor, buffer, () => {
         this.format(editor, formatters.slice(1), { buffer });
       });
