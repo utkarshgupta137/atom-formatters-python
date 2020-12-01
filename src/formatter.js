@@ -75,9 +75,46 @@ class Formatter {
     }
   };
 
+  getCmdArgs(filePath, buffer) {
+    const args = [...this.cmdArgs];
+    args.push(config.getDefaultArgs(this.name, buffer));
+
+    const configPath = this.getLocalConfigPath(filePath) || this.globalConfig;
+    if (configPath) {
+      args.push(config.getConfigArgs(this.name), configPath);
+    }
+
+    if (buffer) {
+      args.push("-");
+    } else {
+      args.push(filePath);
+    }
+    return args;
+  }
+
   setCmdArgs = (value) => {
     this.cmdArgs = value;
   };
+
+  getLocalConfigPath(filePath) {
+    if (_.isEmpty(this.localConfigs)) {
+      return "";
+    }
+    if (this.localConfigPathCache.has(filePath)) {
+      return this.localConfigPathCache.get(filePath);
+    }
+
+    let configPath;
+    this.localConfigs.some((configFileName) => {
+      configPath = helpers.findProjectFile(filePath, configFileName);
+      if (configPath) {
+        return true;
+      }
+      return false;
+    });
+    this.localConfigPathCache.set(filePath, configPath);
+    return configPath;
+  }
 
   setLocalConfigs = (value) => {
     const localConfigs = _.compact(value);
@@ -128,43 +165,6 @@ class Formatter {
       this.globalConfig = "";
     }
   };
-
-  getLocalConfigPath(filePath) {
-    if (_.isEmpty(this.localConfigs)) {
-      return "";
-    }
-    if (this.localConfigPathCache.has(filePath)) {
-      return this.localConfigPathCache.get(filePath);
-    }
-
-    let configPath;
-    this.localConfigs.some((configFileName) => {
-      configPath = helpers.findProjectFile(filePath, configFileName);
-      if (configPath) {
-        return true;
-      }
-      return false;
-    });
-    this.localConfigPathCache.set(filePath, configPath);
-    return configPath;
-  }
-
-  getCmdArgs(filePath, buffer) {
-    const args = [...this.cmdArgs];
-    args.push(config.getDefaultArgs(this.name, buffer));
-
-    const configPath = this.getLocalConfigPath(filePath) || this.globalConfig;
-    if (configPath) {
-      args.push(config.getConfigArgs(this.name), configPath);
-    }
-
-    if (buffer) {
-      args.push("-");
-    } else {
-      args.push(filePath);
-    }
-    return args;
-  }
 
   format(editor, buffer = true, next = () => {}) {
     if (this.binPath) {
