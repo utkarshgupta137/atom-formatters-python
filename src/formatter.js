@@ -11,7 +11,6 @@ const helpers = require("./helpers.js");
 class Formatter {
   constructor(name) {
     this.name = name;
-    this.localConfigPathCache = new Map();
     this.subscriptions = new CompositeDisposable();
 
     this.subscriptions.add(
@@ -52,7 +51,7 @@ class Formatter {
         );
       }),
       config.addCommand(name, () => {
-        this.format(atom.workspace.getActiveTextEditor());
+        this.format(atom.workspace.getActiveTextEditor(), true);
       })
     );
   }
@@ -62,11 +61,11 @@ class Formatter {
     if (binPath === this.binPath) {
       return;
     }
+
     if (!binPath) {
       this.binPath = "";
       return;
     }
-
     if (fs.existsSync(binPath, fs.X_OK)) {
       this.binPath = binPath;
     } else {
@@ -78,58 +77,55 @@ class Formatter {
     }
   };
 
-  getCmdArgs(filePath, buffer) {
-    const args = [...this.cmdArgs];
-    args.push(config.getDefaultArgs(this.name, buffer));
+  getCmdArgs = _.memoize(
+    (filePath, buffer) => {
+      const args = [...this.cmdArgs];
+      args.push(config.getDefaultArgs(this.name, buffer));
 
-    const configPath = this.getLocalConfigPath(filePath) || this.globalConfig;
-    if (configPath) {
-      args.push(config.getConfigArgs(this.name), configPath);
-    }
+      const configPath = this.getLocalConfigPath(filePath) || this.globalConfig;
+      if (configPath) {
+        args.push(config.getConfigArgs(this.name), configPath);
+      }
 
-    if (buffer) {
-      args.push("-");
-    } else {
-      args.push(filePath);
-    }
-    return args;
-  }
+      if (buffer) {
+        args.push("-");
+      } else {
+        args.push(filePath);
+      }
+      return args;
+    },
+    (...args) => _.values(args).join(",")
+  );
 
   setCmdArgs = (value) => {
+    this.getCmdArgs.cache.clear();
     this.cmdArgs = value || [];
   };
 
-  getLocalConfigPath(filePath) {
-    if (_.isEmpty(this.localConfigs)) {
-      return "";
-    }
-    if (this.localConfigPathCache.has(filePath)) {
-      return this.localConfigPathCache.get(filePath);
-    }
-
-    let configPath;
-    this.localConfigs.some((configFileName) => {
-      configPath = helpers.findFileInRepo(filePath, configFileName);
-      if (configPath) {
-        return true;
-      }
-      return false;
-    });
-    this.localConfigPathCache.set(filePath, configPath);
-    return configPath;
-  }
+  getLocalConfigPath = _.memoize(
+    (filePath) => {
+      let configPath;
+      this.localConfigs.some((configFileName) => {
+        configPath = helpers.findFileInRepo(filePath, configFileName);
+        if (configPath) {
+          return true;
+        }
+        return false;
+      });
+      return configPath || "";
+    },
+    (...args) => _.values(args).join(",")
+  );
 
   setLocalConfigs = (value) => {
     const localConfigs = _.compact(value);
     if (_.isEqual(localConfigs, this.localConfigs)) {
       return;
     }
-    this.localConfigPathCache.clear();
-    if (_.isEmpty(localConfigs)) {
-      this.localConfigs = [];
-      return;
-    }
 
+    this.getCmdArgs.cache.clear();
+    this.getLocalConfigPath.cache.clear();
+    this.localConfigs = localConfigs;
     if (
       localConfigs.some((name) => {
         if (validFilename(name)) {
@@ -153,11 +149,12 @@ class Formatter {
     if (globalConfig === this.globalConfig) {
       return;
     }
+
+    this.getCmdArgs.cache.clear();
     if (!globalConfig) {
       this.globalConfig = "";
       return;
     }
-
     if (fs.existsSync(globalConfig, fs.R_OK)) {
       this.globalConfig = globalConfig;
     } else {
@@ -169,7 +166,7 @@ class Formatter {
     }
   };
 
-  format(editor, buffer = true, next = () => {}) {
+  format(editor, buffer, next = () => {}) {
     if (this.binPath) {
       helpers.spawn(
         editor,
