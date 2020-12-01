@@ -106,7 +106,7 @@ class Formatter {
 
     let configPath;
     this.localConfigs.some((configFileName) => {
-      configPath = helpers.findProjectFile(filePath, configFileName);
+      configPath = helpers.findFileInRepo(filePath, configFileName);
       if (configPath) {
         return true;
       }

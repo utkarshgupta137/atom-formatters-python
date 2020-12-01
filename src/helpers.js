@@ -33,18 +33,18 @@ function callWithTimeout(key, func, ...args) {
   );
 }
 
-function findProjectFile(filePath, configName) {
+function findFileInRepo(dirPath, fileName) {
   return findUp.sync(
     (dir) => {
-      if (fs.existsSync(path.join(dir, configName), fs.R_OK)) {
-        return path.join(dir, configName);
+      if (fs.existsSync(path.resolve(dir, fileName), fs.R_OK)) {
+        return path.resolve(dir, fileName);
       }
-      if (fs.existsSync(path.join(dir, ".git"), fs.F_OK)) {
+      if (fs.existsSync(path.resolve(dir, ".git"), fs.F_OK)) {
         return findUp.stop;
       }
       return null;
     },
-    { cwd: path.dirname(filePath) }
+    { cwd: path.dirname(dirPath) }
   );
 }
 
@@ -78,4 +78,4 @@ function spawn(editor, command, args, buffer, next) {
   }
 }
 
-module.exports = { callWithTimeout, findProjectFile, handleError, spawn };
+module.exports = { callWithTimeout, findFileInRepo, handleError, spawn };
