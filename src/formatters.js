@@ -73,14 +73,27 @@ function setSaveOrder(value) {
   services.updateStatusBar(status);
 }
 
+function startFormatters(editor, formatterNames, buffer) {
+  if (_.isEmpty(formatterNames)) {
+    services.removeBusySignal(`Formatters on ${helpers.getEditorPath(editor)}`);
+    return;
+  }
+
+  const name = formatterNames[0];
+  services.addBusySignal(`${name} on ${helpers.getEditorPath(editor)}`);
+  formatters.get(name).format(editor, buffer, () => {
+    services.removeBusySignal(`${name} on ${helpers.getEditorPath(editor)}`);
+    startFormatters(editor, formatterNames.slice(1), buffer);
+  });
+}
+
 function format(editor, formatterNames, { buffer = true } = {}) {
   if (_.isEmpty(formatterNames)) {
     return;
   }
 
-  formatters.get(formatterNames[0]).format(editor, buffer, () => {
-    format(editor, formatterNames.slice(1), { buffer });
-  });
+  services.addBusySignal(`Formatters on ${helpers.getEditorPath(editor)}`);
+  startFormatters(editor, formatterNames, buffer);
 }
 
 function activate() {

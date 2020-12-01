@@ -7,7 +7,6 @@ const { CompositeDisposable } = require("atom");
 
 const config = require("./config.js");
 const helpers = require("./helpers.js");
-const services = require("./services.js");
 
 class Formatter {
   constructor(name) {
@@ -168,7 +167,6 @@ class Formatter {
 
   format(editor, buffer = true, next = () => {}) {
     if (this.binPath) {
-      services.updateBusySignal(`${this.name} on ${editor.getTitle()}`);
       helpers.spawn(
         editor,
         this.binPath,

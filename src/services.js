@@ -3,17 +3,20 @@ const config = require("./config.js");
 let busySignal;
 function consumeBusySignal(value) {
   if (busySignal) {
-    busySignal.clear();
+    busySignal.dispose();
   }
   busySignal = value;
 }
 
-function updateBusySignal(signal) {
+function addBusySignal(signal) {
   if (busySignal) {
-    busySignal.clear();
-    if (signal) {
-      busySignal.add(signal);
-    }
+    busySignal.add(signal);
+  }
+}
+
+function removeBusySignal(signal) {
+  if (busySignal) {
+    busySignal.remove(signal);
   }
 }
 
@@ -91,7 +94,8 @@ function updateStatusBar(status) {
 
 module.exports = {
   consumeBusySignal,
+  addBusySignal,
+  removeBusySignal,
   consumeStatusBar,
-  updateBusySignal,
   updateStatusBar,
 };

@@ -5,7 +5,6 @@ const path = require("path");
 const { BufferedProcess } = require("atom");
 
 const config = require("./config.js");
-const services = require("./services.js");
 
 function handleError(err, msg) {
   const errorHandling = config.get("errorHandling");
@@ -31,6 +30,10 @@ function callWithTimeout(key, func, ...args) {
       func(...args);
     }, 1000)
   );
+}
+
+function getEditorPath(editor) {
+  return atom.project.relativize(editor.getPath());
 }
 
 function findFileInRepo(dirPath, fileName) {
@@ -68,7 +71,6 @@ function spawn(editor, command, args, buffer, next) {
         editor.setText(text);
         editor.setCursorBufferPosition(curpos);
       }
-      services.updateBusySignal();
       next();
     },
   });
@@ -78,4 +80,10 @@ function spawn(editor, command, args, buffer, next) {
   }
 }
 
-module.exports = { callWithTimeout, findFileInRepo, handleError, spawn };
+module.exports = {
+  callWithTimeout,
+  getEditorPath,
+  findFileInRepo,
+  handleError,
+  spawn,
+};
