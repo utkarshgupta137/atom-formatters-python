@@ -88,6 +88,7 @@ function activate() {
     formatters.set(name, new Formatter(name));
   });
 
+  let activeGrammar = null;
   subscriptions.add(
     config.observe("formatOrder", (value) => {
       helpers.callWithTimeout("formatOrder", setFormatOrder, value);
@@ -116,25 +117,43 @@ function activate() {
       }
     }),
     atom.workspace.observeTextEditors((editor) => {
-      if (!config.inScope(editor)) {
-        return;
-      }
-
+      let subscription;
       subscriptions.add(
-        editor.buffer.onDidSave(() => {
-          if (config.get("onSave.enabled")) {
-            if (_.isEmpty(saveOrder)) {
-              helpers.handleError(null, "Format on save order not defined");
-            } else {
-              format(editor, saveOrder, { buffer: false });
-            }
+        editor.observeGrammar(() => {
+          if (subscription) {
+            subscription.dispose();
+            subscription = null;
+          }
+
+          if (config.inScope(editor)) {
+            subscription = editor.buffer.onDidSave(() => {
+              if (config.get("onSave.enabled")) {
+                if (_.isEmpty(saveOrder)) {
+                  helpers.handleError(null, "Format on save order not defined");
+                } else {
+                  format(editor, saveOrder, { buffer: false });
+                }
+              }
+            });
           }
         })
       );
     }),
     atom.workspace.observeActiveTextEditor((editor) => {
-      status.showTile = editor && config.inScope(editor);
-      services.updateStatusBar(status);
+      if (activeGrammar) {
+        activeGrammar.dispose();
+        activeGrammar = null;
+      }
+
+      if (editor) {
+        activeGrammar = editor.observeGrammar(() => {
+          status.showTile = config.inScope(editor);
+          services.updateStatusBar(status);
+        });
+      } else {
+        status.showTile = false;
+        services.updateStatusBar(status);
+      }
     })
   );
 }
