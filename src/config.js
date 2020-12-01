@@ -1,3 +1,5 @@
+const helpers = require("./helpers.js");
+
 const formatters = ["autopep8", "black", "isort", "yapf"];
 
 function getDefaultArgs(name, buffer) {
@@ -149,8 +151,10 @@ function toggle(key) {
   return set(key, !get(key));
 }
 
-function observe(key, callback) {
-  return atom.config.observe(`formatters-python.${key}`, callback);
+function observe(key, callback, timeout = 1000) {
+  return atom.config.observe(`formatters-python.${key}`, (value) => {
+    helpers.callWithTimeout.call(this, timeout, key, callback, value);
+  });
 }
 
 function inScope(editor) {

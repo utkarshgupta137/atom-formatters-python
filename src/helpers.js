@@ -4,10 +4,8 @@ const path = require("path");
 
 const { BufferedProcess } = require("atom");
 
-const config = require("./config.js");
-
 function handleError(err, msg) {
-  const errorHandling = config.get("errorHandling");
+  const errorHandling = atom.config.get("formatters-python.errorHandling");
   if (errorHandling !== "hide") {
     atom.notifications.addError(`formatters-python: ${msg}`, {
       detail: err,

@@ -104,22 +104,22 @@ function activate() {
 
   let activeGrammar = null;
   subscriptions.add(
-    config.observe("formatOrder", (value) => {
-      helpers.callWithTimeout(1000, "formatOrder", setFormatOrder, value);
-    }),
-    config.observe("onSave.saveOrder", (value) => {
-      helpers.callWithTimeout(1000, "saveOrder", setSaveOrder, value);
-    }),
+    config.observe("formatOrder", setFormatOrder),
+    config.observe("onSave.saveOrder", setSaveOrder),
     config.observe("busySignal", (value) => {
       services.consumeBusySignal(value ? busySignal : null);
     }),
     config.observe("statusBar", (value) => {
       services.consumeStatusBar(value ? statusBar : null);
     }),
-    config.observe("onSave.enabled", (value) => {
-      status.showTick = value;
-      services.updateStatusBarElement();
-    }),
+    config.observe(
+      "onSave.enabled",
+      (value) => {
+        status.showTick = value;
+        services.updateStatusBarElement();
+      },
+      0
+    ),
     config.addCommand("toggle-format-on-save", () => {
       config.toggle("onSave.enabled");
     }),

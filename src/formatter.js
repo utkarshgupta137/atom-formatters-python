@@ -14,42 +14,10 @@ class Formatter {
     this.subscriptions = new CompositeDisposable();
 
     this.subscriptions.add(
-      config.observe(`${name}.binPath`, (value) => {
-        helpers.callWithTimeout.call(
-          this,
-          1000,
-          `${name}:binPath`,
-          this.setBinPath,
-          value
-        );
-      }),
-      config.observe(`${name}.cmdArgs`, (value) => {
-        helpers.callWithTimeout.call(
-          this,
-          1000,
-          `${name}:cmdArgs`,
-          this.setCmdArgs,
-          value
-        );
-      }),
-      config.observe(`${name}.localConfigs`, (value) => {
-        helpers.callWithTimeout.call(
-          this,
-          1000,
-          `${name}:localConfigs`,
-          this.setLocalConfigs,
-          value
-        );
-      }),
-      config.observe(`${name}.globalConfig`, (value) => {
-        helpers.callWithTimeout.call(
-          this,
-          1000,
-          `${name}:globalConfig`,
-          this.setGlobalConfig,
-          value
-        );
-      }),
+      config.observe.call(this, `${name}.binPath`, this.setBinPath),
+      config.observe.call(this, `${name}.cmdArgs`, this.setCmdArgs),
+      config.observe.call(this, `${name}.localConfigs`, this.setLocalConfigs),
+      config.observe.call(this, `${name}.globalConfig`, this.setGlobalConfig),
       config.addCommand(name, () => {
         this.format(atom.workspace.getActiveTextEditor(), true);
       })
