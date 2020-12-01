@@ -95,7 +95,7 @@ class Formatter {
     this.getLocalConfigPath.cache.clear();
     this.localConfigs = localConfigs;
     if (
-      localConfigs.some((name) => {
+      this.localConfigs.some((name) => {
         if (validFilename(name)) {
           return false;
         }
@@ -107,8 +107,6 @@ class Formatter {
       })
     ) {
       this.localConfigs = [];
-    } else {
-      this.localConfigs = localConfigs;
     }
   };
 

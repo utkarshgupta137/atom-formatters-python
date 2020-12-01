@@ -29,8 +29,9 @@ function setFormatOrder(value) {
     return;
   }
 
+  formatOrder = newFormatOrder;
   if (
-    newFormatOrder.some((name) => {
+    formatOrder.some((name) => {
       if (formatters.has(name)) {
         return false;
       }
@@ -42,8 +43,6 @@ function setFormatOrder(value) {
     })
   ) {
     formatOrder = [];
-  } else {
-    formatOrder = newFormatOrder;
   }
   services.updateStatusBarTooltip();
 }
@@ -54,8 +53,9 @@ function setSaveOrder(value) {
     return;
   }
 
+  saveOrder = newSaveOrder;
   if (
-    newSaveOrder.some((name) => {
+    saveOrder.some((name) => {
       if (formatters.has(name)) {
         return false;
       }
@@ -67,8 +67,6 @@ function setSaveOrder(value) {
     })
   ) {
     saveOrder = [];
-  } else {
-    saveOrder = newSaveOrder;
   }
   services.updateStatusBarTooltip();
 }
