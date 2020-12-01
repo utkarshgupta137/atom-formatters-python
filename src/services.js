@@ -1,67 +1,61 @@
 const config = require("./config.js");
 
-function consumeBusySignal(busySignal) {
-  if (this.busySignal) {
-    this.busySignal.clear();
+let busySignal;
+function consumeBusySignal(value) {
+  if (busySignal) {
+    busySignal.clear();
   }
-  this.busySignal = busySignal;
+  busySignal = value;
 }
 
 function updateBusySignal(signal) {
-  if (this.busySignal) {
-    this.busySignal.clear();
+  if (busySignal) {
+    busySignal.clear();
     if (signal) {
-      this.busySignal.add(signal);
+      busySignal.add(signal);
     }
   }
 }
 
-function createStatusBarElement() {
-  const element = document.createElement("div");
-  element.classList.add("formatters-python-status-bar-tile");
-  element.appendChild(document.createTextNode("Formatter"));
-  element.addEventListener("click", () => {
-    config.toggle("onSave.enabled");
-  });
-  return element;
-}
+const statusBarElement = document.createElement("div");
+statusBarElement.appendChild(document.createTextNode("Formatter"));
+statusBarElement.classList.add("formatters-python-status-bar-tile");
+statusBarElement.addEventListener("click", () => {
+  config.toggle("onSave.enabled");
+});
+
+let statusBarTile;
+let statusBarTooltip;
 
 function consumeStatusBar(statusBar) {
-  if (this.statusBarTooltip) {
-    this.statusBarTooltip.dispose();
-    this.statusBarTooltip = null;
-  }
-  if (this.statusBarTile) {
-    this.statusBarTile.destroy();
-    this.statusBarTile = null;
+  if (statusBarTile) {
+    statusBarTile.destroy();
+    statusBarTile = null;
   }
 
-  if (!this.statusBarElement) {
-    this.statusBarElement = createStatusBarElement();
-  }
   if (statusBar) {
-    this.statusBarTile = statusBar.addLeftTile({
-      item: this.statusBarElement,
+    statusBarTile = statusBar.addLeftTile({
+      item: statusBarElement,
       priority: 1001,
     });
   }
 }
 
 function updateStatusBar(status) {
-  if (this.statusBarTooltip) {
-    this.statusBarTooltip.dispose();
-    this.statusBarTooltip = null;
+  if (statusBarTooltip) {
+    statusBarTooltip.dispose();
+    statusBarTooltip = null;
   }
 
   if (status.showTile) {
-    this.statusBarElement.classList.add("inline-block");
+    statusBarElement.classList.add("inline-block");
   } else {
-    this.statusBarElement.classList.remove("inline-block");
+    statusBarElement.classList.remove("inline-block");
   }
   if (status.showTick) {
-    this.statusBarElement.classList.add("text-success");
+    statusBarElement.classList.add("text-success");
   } else {
-    this.statusBarElement.classList.remove("text-success");
+    statusBarElement.classList.remove("text-success");
   }
 
   let title = "";
@@ -90,7 +84,7 @@ function updateStatusBar(status) {
   title += "Format on save: ";
   title += status.showTick ? "Enabled" : "Disabled";
   title += " (Click to toggle)";
-  this.statusBarTooltip = atom.tooltips.add(this.statusBarElement, {
+  statusBarTooltip = atom.tooltips.add(statusBarElement, {
     title,
   });
 }
