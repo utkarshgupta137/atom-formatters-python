@@ -74,7 +74,7 @@ const schema = {
       },
     },
   },
-  showErrors: {
+  errorHandling: {
     title: "Errors",
     type: "string",
     default: "show",

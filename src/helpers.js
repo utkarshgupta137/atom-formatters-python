@@ -8,11 +8,11 @@ const config = require("./config.js");
 const services = require("./services.js");
 
 function handleError(err, msg) {
-  const errors = config.get("showErrors");
-  if (errors !== "hide") {
+  const errorHandling = config.get("errorHandling");
+  if (errorHandling !== "hide") {
     atom.notifications.addError(`formatters-python: ${msg}`, {
       detail: err,
-      dismissable: errors === "show",
+      dismissable: errorHandling === "show",
     });
   }
 }
