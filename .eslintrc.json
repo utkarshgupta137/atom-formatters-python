@@ -1,5 +1,5 @@
 {
-  "extends": ["eslint-config-airbnb-base", "eslint-config-atomic"],
+  "extends": ["standard", "airbnb-base", "atomic"],
   "ignorePatterns": ["dist/", "node_modules/"],
   "rules": {
     "import/no-unresolved": [
