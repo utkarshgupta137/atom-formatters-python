@@ -48,7 +48,7 @@ const schema = {
     order: 2,
   },
   statusBar: {
-    title: "Show format order info & format on save toggle in status bar",
+    title: "Show formatter info & format on save toggle in status bar",
     type: "boolean",
     default: true,
     order: 3,

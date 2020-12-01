@@ -7,19 +7,21 @@ const config = require("./config.js");
 const helpers = require("./helpers.js");
 const services = require("./services.js");
 
-const status = {
-  formatOrder: [],
-  saveOrder: [],
-  showTick: false,
-  showTile: false,
-};
 const formatters = new Map();
 const subscriptions = new CompositeDisposable();
+let formatOrder = [];
+let saveOrder = [];
 
 let busySignal = null;
 let statusBar = null;
-let formatOrder = [];
-let saveOrder = [];
+const status = {
+  editor: null,
+  formatters,
+  formatOrder,
+  saveOrder,
+  showTick: false,
+  showTile: false,
+};
 
 function setFormatOrder(value) {
   const newFormatOrder = _.compact(value);
@@ -43,8 +45,7 @@ function setFormatOrder(value) {
   } else {
     formatOrder = newFormatOrder;
   }
-  status.formatOrder = formatOrder;
-  services.updateStatusBar(status);
+  services.updateStatusBarTooltip();
 }
 
 function setSaveOrder(value) {
@@ -69,8 +70,7 @@ function setSaveOrder(value) {
   } else {
     saveOrder = newSaveOrder;
   }
-  status.saveOrder = saveOrder;
-  services.updateStatusBar(status);
+  services.updateStatusBarTooltip();
 }
 
 function startFormatters(editor, formatterNames, buffer) {
@@ -97,6 +97,7 @@ function format(editor, formatterNames, { buffer = true } = {}) {
 }
 
 function activate() {
+  services.setStatusObject(status);
   config.formatters.forEach((name) => {
     formatters.set(name, new Formatter(name));
   });
@@ -104,10 +105,10 @@ function activate() {
   let activeGrammar = null;
   subscriptions.add(
     config.observe("formatOrder", (value) => {
-      helpers.callWithTimeout("formatOrder", setFormatOrder, value);
+      helpers.callWithTimeout(1000, "formatOrder", setFormatOrder, value);
     }),
     config.observe("onSave.saveOrder", (value) => {
-      helpers.callWithTimeout("saveOrder", setSaveOrder, value);
+      helpers.callWithTimeout(1000, "saveOrder", setSaveOrder, value);
     }),
     config.observe("busySignal", (value) => {
       services.consumeBusySignal(value ? busySignal : null);
@@ -117,7 +118,7 @@ function activate() {
     }),
     config.observe("onSave.enabled", (value) => {
       status.showTick = value;
-      services.updateStatusBar(status);
+      services.updateStatusBarElement();
     }),
     config.addCommand("toggle-format-on-save", () => {
       config.toggle("onSave.enabled");
@@ -158,22 +159,23 @@ function activate() {
         activeGrammar = null;
       }
 
+      status.editor = editor;
+      services.updateStatusBarTooltip();
       if (editor) {
         activeGrammar = editor.observeGrammar(() => {
           status.showTile = config.inScope(editor);
-          services.updateStatusBar(status);
+          services.updateStatusBarElement();
         });
       } else {
         status.showTile = false;
-        services.updateStatusBar(status);
+        services.updateStatusBarElement();
       }
     })
   );
 }
 
 function deactivate() {
-  services.consumeBusySignal(null);
-  services.consumeStatusBar(null);
+  services.dispose();
   formatters.forEach((formatter) => {
     formatter.subscriptions.dispose();
   });

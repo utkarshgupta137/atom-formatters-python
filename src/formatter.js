@@ -18,6 +18,7 @@ class Formatter {
       config.observe(`${name}.binPath`, (value) => {
         helpers.callWithTimeout.call(
           this,
+          1000,
           `${name}:binPath`,
           this.setBinPath,
           value
@@ -26,6 +27,7 @@ class Formatter {
       config.observe(`${name}.cmdArgs`, (value) => {
         helpers.callWithTimeout.call(
           this,
+          1000,
           `${name}:cmdArgs`,
           this.setCmdArgs,
           value
@@ -34,6 +36,7 @@ class Formatter {
       config.observe(`${name}.localConfigs`, (value) => {
         helpers.callWithTimeout.call(
           this,
+          1000,
           `${name}:localConfigs`,
           this.setLocalConfigs,
           value
@@ -42,6 +45,7 @@ class Formatter {
       config.observe(`${name}.globalConfig`, (value) => {
         helpers.callWithTimeout.call(
           this,
+          1000,
           `${name}:globalConfig`,
           this.setGlobalConfig,
           value
@@ -92,7 +96,7 @@ class Formatter {
   }
 
   setCmdArgs = (value) => {
-    this.cmdArgs = value;
+    this.cmdArgs = value || [];
   };
 
   getLocalConfigPath(filePath) {

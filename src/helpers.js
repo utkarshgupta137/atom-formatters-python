@@ -17,7 +17,7 @@ function handleError(err, msg) {
 }
 
 const timers = new Map();
-function callWithTimeout(key, func, ...args) {
+function callWithTimeout(timeout, key, func, ...args) {
   if (timers.has(key)) {
     clearTimeout(timers.get(key));
     timers.delete(key);
@@ -28,7 +28,7 @@ function callWithTimeout(key, func, ...args) {
     setTimeout(() => {
       timers.delete(key);
       func(...args);
-    }, 1000)
+    }, timeout)
   );
 }
 
