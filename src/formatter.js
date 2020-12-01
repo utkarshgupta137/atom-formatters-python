@@ -1,5 +1,4 @@
 const _ = require("lodash");
-const fs = require("fs");
 const untildify = require("untildify");
 const validFilename = require("valid-filename");
 
@@ -34,7 +33,7 @@ class Formatter {
       this.binPath = "";
       return;
     }
-    if (fs.existsSync(binPath, fs.X_OK)) {
+    if (helpers.isPathX(binPath)) {
       this.binPath = binPath;
     } else {
       helpers.handleError(
@@ -121,7 +120,7 @@ class Formatter {
       this.globalConfig = "";
       return;
     }
-    if (fs.existsSync(globalConfig, fs.R_OK)) {
+    if (helpers.isPathR(globalConfig)) {
       this.globalConfig = globalConfig;
     } else {
       helpers.handleError(

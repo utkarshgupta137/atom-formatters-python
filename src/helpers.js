@@ -4,6 +4,42 @@ const path = require("path");
 
 const { BufferedProcess } = require("atom");
 
+function isPathF(filePath) {
+  try {
+    fs.accessSync(filePath, fs.constants.F_OK);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+function isPathR(filePath) {
+  try {
+    fs.accessSync(filePath, fs.constants.R_OK);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+function isPathW(filePath) {
+  try {
+    fs.accessSync(filePath, fs.constants.W_OK);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+function isPathX(filePath) {
+  try {
+    fs.accessSync(filePath, fs.constants.X_OK);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
 function handleError(err, msg) {
   const errorHandling = atom.config.get("formatters-python.errorHandling");
   if (errorHandling !== "hide") {
@@ -37,10 +73,10 @@ function getEditorPath(editor) {
 function findFileInRepo(dirPath, fileName) {
   return findUp.sync(
     (dir) => {
-      if (fs.existsSync(path.resolve(dir, fileName), fs.R_OK)) {
+      if (isPathR(path.resolve(dir, fileName))) {
         return path.resolve(dir, fileName);
       }
-      if (fs.existsSync(path.resolve(dir, ".git"), fs.F_OK)) {
+      if (isPathF(path.resolve(dir, ".git"))) {
         return findUp.stop;
       }
       return null;
@@ -79,6 +115,10 @@ function spawn(editor, command, args, buffer, next) {
 }
 
 module.exports = {
+  isPathF,
+  isPathR,
+  isPathW,
+  isPathX,
   callWithTimeout,
   getEditorPath,
   findFileInRepo,
