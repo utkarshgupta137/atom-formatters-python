@@ -7,173 +7,166 @@ const config = require("./config.js");
 const helpers = require("./helpers.js");
 const services = require("./services.js");
 
-class Formatters {
-  config = config.schema;
+const status = {
+  formatOrder: [],
+  saveOrder: [],
+  showTick: false,
+  showTile: false,
+};
+const formatters = new Map();
+const subscriptions = new CompositeDisposable();
 
-  activate() {
-    this.status = {
-      formatOrder: [],
-      saveOrder: [],
-      showTick: false,
-      showTile: false,
-    };
-    this.formatters = new Map();
-    this.subscriptions = new CompositeDisposable();
+let busySignal = null;
+let statusBar = null;
+let formatOrder = [];
+let saveOrder = [];
 
-    config.formatters.forEach((name) => {
-      this.formatters.set(name, new Formatter(name));
-    });
-
-    this.subscriptions.add(
-      config.observe("formatOrder", (value) => {
-        helpers.callWithTimeout.call(
-          this,
-          "formatOrder",
-          this.setFormatOrder,
-          value
-        );
-      }),
-      config.observe("onSave.saveOrder", (value) => {
-        helpers.callWithTimeout.call(
-          this,
-          "saveOrder",
-          this.setSaveOrder,
-          value
-        );
-      }),
-      config.observe("busySignal", (value) => {
-        services.consumeBusySignal(value ? this.busySignal : null);
-      }),
-      config.observe("statusBar", (value) => {
-        services.consumeStatusBar(value ? this.statusBar : null);
-      }),
-      config.observe("onSave.enabled", (value) => {
-        this.status.showTick = value;
-        services.updateStatusBar(this.status);
-      }),
-      config.addCommand("toggle-format-on-save", () => {
-        config.toggle("onSave.enabled");
-      }),
-      config.addCommand("format", () => {
-        if (_.isEmpty(this.formatOrder)) {
-          helpers.handleError(null, "Format order not defined");
-        } else {
-          this.format(atom.workspace.getActiveTextEditor(), this.formatOrder);
-        }
-      }),
-      atom.workspace.observeTextEditors((editor) => {
-        if (config.inScope(editor)) {
-          this.subscriptions.add(
-            editor.buffer.onDidSave(() => {
-              if (config.get("onSave.enabled")) {
-                if (_.isEmpty(this.saveOrder)) {
-                  helpers.handleError(null, "Format on save order not defined");
-                } else {
-                  this.format(editor, this.saveOrder, { buffer: false });
-                }
-              }
-            })
-          );
-        }
-      }),
-      atom.workspace.observeActiveTextEditor((editor) => {
-        this.status.showTile = editor && config.inScope(editor);
-        services.updateStatusBar(this.status);
-      })
-    );
+function setFormatOrder(value) {
+  const newFormatOrder = _.compact(value);
+  if (_.isEqual(newFormatOrder, formatOrder)) {
+    return;
   }
 
-  deactivate() {
-    services.consumeBusySignal(null);
-    services.consumeStatusBar(null);
-    this.formatters.forEach((formatter) => {
-      formatter.subscriptions.dispose();
-    });
-    this.subscriptions.dispose();
+  if (
+    newFormatOrder.some((name) => {
+      if (formatters.has(name)) {
+        return false;
+      }
+      helpers.handleError(
+        `'${name}' is not a valid formatter name.`,
+        `Invalid format order`
+      );
+      return true;
+    })
+  ) {
+    formatOrder = [];
+  } else {
+    formatOrder = newFormatOrder;
+  }
+  status.formatOrder = formatOrder;
+  services.updateStatusBar(status);
+}
+
+function setSaveOrder(value) {
+  const newSaveOrder = _.compact(value);
+  if (_.isEqual(newSaveOrder, saveOrder)) {
+    return;
   }
 
-  consumeBusySignal(registry) {
-    this.busySignal = registry.create();
-    this.subscriptions.add(this.busySignal);
-    if (config.get("busySignal")) {
-      services.consumeBusySignal(this.busySignal);
-    }
+  if (
+    newSaveOrder.some((name) => {
+      if (formatters.has(name)) {
+        return false;
+      }
+      helpers.handleError(
+        `'${name}' is not a valid formatter name.`,
+        `Invalid format on save order`
+      );
+      return true;
+    })
+  ) {
+    saveOrder = [];
+  } else {
+    saveOrder = newSaveOrder;
+  }
+  status.saveOrder = saveOrder;
+  services.updateStatusBar(status);
+}
+
+function format(editor, formatterNames, { buffer = true } = {}) {
+  if (_.isEmpty(formatterNames)) {
+    return;
   }
 
-  consumeStatusBar(provider) {
-    this.statusBar = provider;
-    if (config.get("statusBar")) {
-      services.consumeStatusBar(this.statusBar);
-    }
-  }
+  formatters.get(formatterNames[0]).format(editor, buffer, () => {
+    format(editor, formatterNames.slice(1), { buffer });
+  });
+}
 
-  setFormatOrder = (value) => {
-    const formatOrder = _.compact(value);
-    if (_.isEqual(formatOrder, this.formatOrder)) {
-      return;
-    }
-    if (_.isEmpty(formatOrder)) {
-      this.formatOrder = [];
-      return;
-    }
+function activate() {
+  config.formatters.forEach((name) => {
+    formatters.set(name, new Formatter(name));
+  });
 
-    if (
-      formatOrder.some((name) => {
-        if (this.formatters.has(name)) {
-          return false;
-        }
-        helpers.handleError(
-          `'${name}' is not a valid formatter name.`,
-          `Invalid format order`
-        );
-        return true;
-      })
-    ) {
-      this.formatOrder = [];
-    } else {
-      this.formatOrder = formatOrder;
-    }
-    this.status.formatOrder = this.formatOrder;
-    services.updateStatusBar(this.status);
-  };
+  subscriptions.add(
+    config.observe("formatOrder", (value) => {
+      helpers.callWithTimeout("formatOrder", setFormatOrder, value);
+    }),
+    config.observe("onSave.saveOrder", (value) => {
+      helpers.callWithTimeout("saveOrder", setSaveOrder, value);
+    }),
+    config.observe("busySignal", (value) => {
+      services.consumeBusySignal(value ? busySignal : null);
+    }),
+    config.observe("statusBar", (value) => {
+      services.consumeStatusBar(value ? statusBar : null);
+    }),
+    config.observe("onSave.enabled", (value) => {
+      status.showTick = value;
+      services.updateStatusBar(status);
+    }),
+    config.addCommand("toggle-format-on-save", () => {
+      config.toggle("onSave.enabled");
+    }),
+    config.addCommand("format", () => {
+      if (_.isEmpty(formatOrder)) {
+        helpers.handleError(null, "Format order not defined");
+      } else {
+        format(atom.workspace.getActiveTextEditor(), formatOrder);
+      }
+    }),
+    atom.workspace.observeTextEditors((editor) => {
+      if (!config.inScope(editor)) {
+        return;
+      }
 
-  setSaveOrder = (value) => {
-    const saveOrder = _.compact(value);
-    if (_.isEqual(saveOrder, this.saveOrder)) {
-      return;
-    }
-    if (_.isEmpty(saveOrder)) {
-      this.saveOrder = [];
-      return;
-    }
+      subscriptions.add(
+        editor.buffer.onDidSave(() => {
+          if (config.get("onSave.enabled")) {
+            if (_.isEmpty(saveOrder)) {
+              helpers.handleError(null, "Format on save order not defined");
+            } else {
+              format(editor, saveOrder, { buffer: false });
+            }
+          }
+        })
+      );
+    }),
+    atom.workspace.observeActiveTextEditor((editor) => {
+      status.showTile = editor && config.inScope(editor);
+      services.updateStatusBar(status);
+    })
+  );
+}
 
-    if (
-      saveOrder.some((name) => {
-        if (this.formatters.has(name)) {
-          return false;
-        }
-        helpers.handleError(
-          `'${name}' is not a valid formatter name.`,
-          `Invalid format on save order`
-        );
-        return true;
-      })
-    ) {
-      this.saveOrder = [];
-    } else {
-      this.saveOrder = saveOrder;
-    }
-    this.status.saveOrder = this.saveOrder;
-    services.updateStatusBar(this.status);
-  };
+function deactivate() {
+  services.consumeBusySignal(null);
+  services.consumeStatusBar(null);
+  formatters.forEach((formatter) => {
+    formatter.subscriptions.dispose();
+  });
+  subscriptions.dispose();
+}
 
-  format(editor, formatters, { buffer = true } = {}) {
-    if (!_.isEmpty(formatters)) {
-      this.formatters.get(formatters[0]).format(editor, buffer, () => {
-        this.format(editor, formatters.slice(1), { buffer });
-      });
-    }
+function consumeBusySignal(registry) {
+  busySignal = registry.create();
+  subscriptions.add(busySignal);
+  if (config.get("busySignal")) {
+    services.consumeBusySignal(busySignal);
   }
 }
 
-module.exports = new Formatters();
+function consumeStatusBar(provider) {
+  statusBar = provider;
+  if (config.get("statusBar")) {
+    services.consumeStatusBar(statusBar);
+  }
+}
+
+module.exports = {
+  config: config.schema,
+  activate,
+  deactivate,
+  consumeBusySignal,
+  consumeStatusBar,
+};
