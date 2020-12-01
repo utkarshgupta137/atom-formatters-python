@@ -66,8 +66,8 @@ function spawn(editor, command, args, buffer, next) {
     exit: () => {
       if (buffer) {
         editor.setText(text);
+        editor.setCursorBufferPosition(curpos);
       }
-      editor.setCursorBufferPosition(curpos);
       services.updateBusySignal();
       next();
     },
