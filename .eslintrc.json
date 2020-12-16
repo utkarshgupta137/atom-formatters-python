@@ -1,10 +1,52 @@
 {
-  "extends": ["standard", "airbnb-base", "atomic"],
-  "ignorePatterns": ["dist/", "node_modules/"],
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:import/warnings",
+    "plugin:import/errors",
+    "plugin:promise/recommended",
+    "standard",
+    "airbnb-base",
+    "prettier",
+    "prettier/standard"
+  ],
+  "globals": {
+    "atom": "readonly"
+  },
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
+  "root": true,
   "rules": {
+    "arrow-body-style": ["error", "always"],
+    "curly": ["error", "all"],
     "import/no-unresolved": [
       "error",
-      { "commonjs": true, "caseSensitive": true, "ignore": ["atom"] }
+      {
+        "caseSensitive": true,
+        "commonjs": true,
+        "ignore": ["atom"]
+      }
+    ],
+    "import/order": [
+      "error",
+      {
+        "alphabetize": {
+          "order": "asc"
+        },
+        "groups": ["builtin", "external", "parent", "sibling"],
+        "newlines-between": "always"
+      }
+    ],
+    "no-param-reassign": [
+      "error",
+      {
+        "props": false
+      }
     ]
   }
 }

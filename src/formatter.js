@@ -1,8 +1,7 @@
+const { CompositeDisposable } = require("atom");
 const _ = require("lodash");
 const untildify = require("untildify");
 const validFilename = require("valid-filename");
-
-const { CompositeDisposable } = require("atom");
 
 const config = require("./config.js");
 const helpers = require("./helpers.js");
@@ -61,7 +60,9 @@ class Formatter {
       }
       return args;
     },
-    (...args) => _.values(args).join(",")
+    (...args) => {
+      return _.values(args).join(",");
+    }
   );
 
   setCmdArgs = (value) => {
@@ -81,7 +82,9 @@ class Formatter {
       });
       return configPath || "";
     },
-    (...args) => _.values(args).join(",")
+    (...args) => {
+      return _.values(args).join(",");
+    }
   );
 
   setLocalConfigs = (value) => {

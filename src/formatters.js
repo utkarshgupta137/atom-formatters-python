@@ -1,9 +1,8 @@
+const { CompositeDisposable } = require("atom");
 const _ = require("lodash");
 
-const { CompositeDisposable } = require("atom");
-
-const { Formatter } = require("./formatter.js");
 const config = require("./config.js");
+const { Formatter } = require("./formatter.js");
 const helpers = require("./helpers.js");
 const services = require("./services.js");
 

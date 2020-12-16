@@ -1,8 +1,8 @@
-const findUp = require("find-up");
 const fs = require("fs");
 const path = require("path");
 
 const { BufferedProcess } = require("atom");
+const findUp = require("find-up");
 
 function isPathF(filePath) {
   try {
