@@ -11,7 +11,6 @@ function getDefaultArgs(name, buffer) {
       }
       return "";
     case "black":
-      return "--quiet --fast";
     case "isort":
       return "--quiet";
     default:
