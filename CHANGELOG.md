@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/utkarshgupta137/atom-formatters-python/compare/v1.1.0...v1.1.1) (2020-12-16)
+
+
+### Bug Fixes
+
+* **black:** don't use --fast by default ([5e078e2](https://github.com/utkarshgupta137/atom-formatters-python/commit/5e078e2d1a92352cdfd43d50b3835c2d05003f84))
+
 ## [1.1.0](https://github.com/utkarshgupta137/atom-formatters-python/compare/v1.0.2...v1.1.0) (2020-12-01)
 
 
