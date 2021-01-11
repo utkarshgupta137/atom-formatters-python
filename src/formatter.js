@@ -56,7 +56,7 @@ class Formatter {
       if (buffer) {
         args.push("-");
       } else {
-        args.push(filePath);
+        args.push(`"${filePath}"`);
       }
       return args;
     },
