@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://github.com/utkarshgupta137/atom-formatters-python/compare/v1.1.1...v1.1.2) (2021-01-11)
+
+
+### Bug Fixes
+
+* add quotes around file path ([72fde6e](https://github.com/utkarshgupta137/atom-formatters-python/commit/72fde6e3990c40012b19ef0c63f9b0ac2e30cda7))
+* remove old console.log ([264c80c](https://github.com/utkarshgupta137/atom-formatters-python/commit/264c80c4d0500bfee57b74bccfd56410df301217))
+
 ### [1.1.1](https://github.com/utkarshgupta137/atom-formatters-python/compare/v1.1.0...v1.1.1) (2020-12-16)
 
 
