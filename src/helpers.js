@@ -86,8 +86,6 @@ function findFileInRepo(dirPath, fileName) {
 }
 
 function spawn(editor, command, args, buffer, next) {
-  console.log(command, args);
-
   let text = "";
   const curpos = editor.getCursorBufferPosition();
   const bp = new BufferedProcess({
