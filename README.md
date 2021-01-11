@@ -3,7 +3,9 @@
 [![apm](https://img.shields.io/apm/v/formatters-python.svg?style=flat-square)](https://atom.io/packages/formatters-python)
 [![apm](https://img.shields.io/apm/dm/formatters-python.svg?style=flat-square)](https://atom.io/packages/formatters-python)
 [![apm](https://img.shields.io/apm/l/formatters-python.svg?style=flat-square)](https://github.com/utkarshgupta137/atom-formatters-python/blob/master/LICENSE)
+
 [![badge](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![badge](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square)](http://commitizen.github.io/cz-cli/)
 
 Supports [autopep8](https://github.com/hhatto/autopep8), [black](https://github.com/psf/black), [isort](https://github.com/PyCQA/isort), [yapf](https://github.com/google/yapf) for formatting Python code.
 
