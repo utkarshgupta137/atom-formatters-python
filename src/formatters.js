@@ -8,29 +8,27 @@ const services = require("./services.js");
 
 const formatters = new Map();
 const subscriptions = new CompositeDisposable();
-let formatOrder = [];
-let saveOrder = [];
 
 let busySignal = null;
 let statusBar = null;
 const status = {
   editor: null,
   formatters,
-  formatOrder,
-  saveOrder,
+  formatOrder: [],
+  saveOrder: [],
   showTick: false,
   showTile: false,
 };
 
 function setFormatOrder(value) {
   const newFormatOrder = _.compact(value);
-  if (_.isEqual(newFormatOrder, formatOrder)) {
+  if (_.isEqual(newFormatOrder, status.formatOrder)) {
     return;
   }
 
-  formatOrder = newFormatOrder;
+  status.formatOrder = newFormatOrder;
   if (
-    formatOrder.some((name) => {
+    status.formatOrder.some((name) => {
       if (formatters.has(name)) {
         return false;
       }
@@ -41,20 +39,20 @@ function setFormatOrder(value) {
       return true;
     })
   ) {
-    formatOrder = [];
+    status.formatOrder = [];
   }
   services.updateStatusBarTooltip();
 }
 
 function setSaveOrder(value) {
   const newSaveOrder = _.compact(value);
-  if (_.isEqual(newSaveOrder, saveOrder)) {
+  if (_.isEqual(newSaveOrder, status.saveOrder)) {
     return;
   }
 
-  saveOrder = newSaveOrder;
+  status.saveOrder = newSaveOrder;
   if (
-    saveOrder.some((name) => {
+    status.saveOrder.some((name) => {
       if (formatters.has(name)) {
         return false;
       }
@@ -65,7 +63,7 @@ function setSaveOrder(value) {
       return true;
     })
   ) {
-    saveOrder = [];
+    status.saveOrder = [];
   }
   services.updateStatusBarTooltip();
 }
@@ -121,10 +119,10 @@ function activate() {
       config.toggle("onSave.enabled");
     }),
     config.addCommand("format", () => {
-      if (_.isEmpty(formatOrder)) {
+      if (_.isEmpty(status.formatOrder)) {
         helpers.handleError(null, "Format order not defined");
       } else {
-        format(atom.workspace.getActiveTextEditor(), formatOrder);
+        format(atom.workspace.getActiveTextEditor(), status.formatOrder);
       }
     }),
     atom.workspace.observeTextEditors((editor) => {
@@ -139,10 +137,10 @@ function activate() {
           if (config.inScope(editor)) {
             subscription = editor.buffer.onDidSave(() => {
               if (config.get("onSave.enabled")) {
-                if (_.isEmpty(saveOrder)) {
+                if (_.isEmpty(status.saveOrder)) {
                   helpers.handleError(null, "Format on save order not defined");
                 } else {
-                  format(editor, saveOrder, { buffer: false });
+                  format(editor, status.saveOrder, { buffer: false });
                 }
               }
             });
