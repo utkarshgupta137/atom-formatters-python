@@ -36,12 +36,28 @@ function getTooltipTitle() {
     return title;
   }
 
-  title += `CLI arguments for ${status.editor.getTitle()}: <br>`;
+  title += `Path/Args for ${status.editor.getTitle()}: <br>`;
   status.formatters.forEach((formatter, name) => {
-    if (formatter.binPath) {
+    const filePath = status.editor.getPath();
+    let localBinPath;
+    if (formatter.localBins) {
+      localBinPath = formatter.getLocalBinPath(filePath);
+    }
+    if (localBinPath) {
       title += `${name}: `;
+      title += localBinPath;
+      title += " ";
       title += formatter
-        .getCmdArgs(status.editor.getPath(), true)
+        .getLocalCmdArgs(filePath, false)
+        .slice(0, -1)
+        .join(" ");
+      title += "<br>";
+    } else if (formatter.binPath) {
+      title += `${name}: `;
+      title += formatter.binPath;
+      title += " ";
+      title += formatter
+        .getGlobalCmdArgs(filePath, false)
         .slice(0, -1)
         .join(" ");
       title += "<br>";

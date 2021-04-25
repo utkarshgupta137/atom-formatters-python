@@ -70,11 +70,15 @@ function getEditorPath(editor) {
   return atom.project.relativize(editor.getPath());
 }
 
-function findFileInRepo(dirPath, fileName) {
+function findFileInRepo(dirPath, filePath, executable = false) {
   return findUp.sync(
     (dir) => {
-      if (isPathR(path.resolve(dir, fileName))) {
-        return path.resolve(dir, fileName);
+      if (executable) {
+        if (isPathX(path.resolve(dir, filePath))) {
+          return path.resolve(dir, filePath);
+        }
+      } else if (isPathR(path.resolve(dir, filePath))) {
+        return path.resolve(dir, filePath);
       }
       if (isPathF(path.resolve(dir, ".git"))) {
         return findUp.stop;

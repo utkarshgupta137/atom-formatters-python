@@ -35,29 +35,29 @@ function getConfigArgs(name) {
 
 const schema = {
   formatOrder: {
-    title: "Formatters for format command",
-    type: "array",
-    default: [],
-    description: "Comma separated, in order",
     order: 1,
+    type: "array",
     items: { type: "string" },
+    default: [],
+    title: "Formatters for format command",
+    description: "Comma separated, in order",
   },
   busySignal: {
-    title: "Show formatting status in busy signal",
+    order: 2,
     type: "boolean",
     default: true,
-    order: 2,
+    title: "Show formatting status in busy signal",
   },
   statusBar: {
-    title: "Show formatter info & format on save toggle in status bar",
+    order: 3,
     type: "boolean",
     default: true,
-    order: 3,
+    title: "Show formatter info & format on save toggle in status bar",
   },
   onSave: {
-    title: "Format on save",
-    type: "object",
     order: 4,
+    type: "object",
+    title: "Format on save",
     properties: {
       enabled: {
         title: "Format files on save",
@@ -76,10 +76,10 @@ const schema = {
     },
   },
   errorHandling: {
-    title: "Errors",
+    order: formatters.length + 5,
     type: "string",
     default: "show",
-    order: formatters.length + 5,
+    title: "Errors",
     enum: [
       {
         value: "show",
@@ -99,40 +99,73 @@ const schema = {
 
 formatters.forEach((formatter, i) => {
   schema[formatter] = {
-    title: `${formatter} options`,
-    type: "object",
     order: i + 5,
+    type: "object",
+    title: `${formatter} options`,
     properties: {
-      binPath: {
-        title: "Binary path",
-        type: "string",
-        default: "",
-        description: `Run *pip install ${formatter}* & then *which ${formatter}*`,
+      local: {
         order: 1,
+        type: "object",
+        title: "Local formatters (relative to file)",
+        properties: {
+          bins: {
+            order: 1,
+            type: "array",
+            items: { type: "string" },
+            default: [],
+            title: "Binary paths",
+            description:
+              "Binaries to look for in parent directories (Comma separated, in order). Eg: for `~/example/repo/.venv/bin/python`, where the repo folder contains the file to be formatted, use `.venv/bin/python` ",
+          },
+          cmdArgs: {
+            order: 2,
+            type: "array",
+            items: { type: "string" },
+            default: [],
+            title: "Command line arguments",
+            description: "Command line arguments, which will always be passed",
+          },
+          configs: {
+            order: 3,
+            type: "array",
+            items: { type: "string" },
+            default: [],
+            title: "Config files",
+            description:
+              "Config files to look for in parent directories or global paths (Comma separated, in order)",
+          },
+        },
       },
-      cmdArgs: {
-        title: "Command line arguments",
-        type: "array",
-        default: [],
-        description: "Command line arguments, which will always be passed",
+      global: {
         order: 2,
-      },
-      localConfigs: {
-        title: "Local config files",
-        type: "array",
-        default: [],
-        description:
-          "Config files to look for in parent directories, which will be explicitly passed if present (Comma separated, in order)",
-        order: 3,
-        items: { type: "string" },
-      },
-      globalConfig: {
-        title: "Global config file",
-        type: "string",
-        default: "",
-        description:
-          "Global config file, which will be explicitly passed if none of the local config files are present",
-        order: 4,
+        type: "object",
+        title: "Global formatter (if none of the local formatters are found)",
+        properties: {
+          binPath: {
+            order: 1,
+            type: "string",
+            default: "",
+            title: "Binary path",
+            description: `Run \`pip install ${formatter}\` & then \`which ${formatter}\``,
+          },
+          cmdArgs: {
+            order: 2,
+            type: "array",
+            items: { type: "string" },
+            default: [],
+            title: "Command line arguments",
+            description: "Command line arguments, which will always be passed",
+          },
+          configs: {
+            order: 3,
+            type: "array",
+            items: { type: "string" },
+            default: [],
+            title: "Config files",
+            description:
+              "Config files to look for in parent directories or global paths (Comma separated, in order)",
+          },
+        },
       },
     },
   };
@@ -145,6 +178,27 @@ function get(key) {
 function set(key, value) {
   return atom.config.set(`formatters-python.${key}`, value);
 }
+
+formatters.forEach((name) => {
+  const binPath = get(`${name}.binPath`);
+  if (binPath) {
+    const cmdArgs = get(`${name}.cmdArgs`);
+    const configs = get(`${name}.localConfigs`) || [];
+    const globalConfig = get(`${name}.globalConfig`);
+    if (globalConfig) {
+      configs.push(globalConfig);
+    }
+
+    atom.config.unset(`formatters-python.${name}`);
+    set(`${name}.global.binPath`, binPath);
+    if (cmdArgs) {
+      set(`${name}.global.cmdArgs`, cmdArgs);
+    }
+    if (configs.length > 0) {
+      set(`${name}.global.configs`, configs);
+    }
+  }
+});
 
 function toggle(key) {
   return set(key, !get(key));
