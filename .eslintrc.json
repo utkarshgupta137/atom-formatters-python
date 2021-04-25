@@ -10,8 +10,7 @@
     "plugin:promise/recommended",
     "standard",
     "airbnb-base",
-    "prettier",
-    "prettier/standard"
+    "prettier"
   ],
   "globals": {
     "atom": "readonly"
