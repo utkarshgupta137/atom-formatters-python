@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/utkarshgupta137/atom-formatters-python/compare/v1.1.2...v1.2.0) (2021-04-30)
+
+
+### Features
+
+* **formatter:** allow formatters relative to file path and merge local & global configs into one ([99b7d37](https://github.com/utkarshgupta137/atom-formatters-python/commit/99b7d37c695120a20fa9a8eddc20a4b78f45fef0))
+
+
+### Bug Fixes
+
+* **formatter:** fix is path absolute logic ([ec6698b](https://github.com/utkarshgupta137/atom-formatters-python/commit/ec6698b133975858495c85633917dfd82d6bbe3d))
+* **status:** fix format/save order in status bar ([8483b26](https://github.com/utkarshgupta137/atom-formatters-python/commit/8483b26619c1c0cf113c814561e3cf1fbe4cf775))
+
 ### [1.1.2](https://github.com/utkarshgupta137/atom-formatters-python/compare/v1.1.1...v1.1.2) (2021-01-11)
 
 
