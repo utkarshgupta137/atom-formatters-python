@@ -4,6 +4,13 @@ const path = require("path");
 const { BufferedProcess } = require("atom");
 const findUp = require("find-up");
 
+function isPathAbsolute(filePath) {
+  return (
+    path.normalize(`${filePath}/`) ===
+    path.normalize(`${path.resolve(filePath)}/`)
+  );
+}
+
 function isPathF(filePath) {
   try {
     fs.accessSync(filePath, fs.constants.F_OK);
@@ -117,6 +124,7 @@ function spawn(editor, command, args, buffer, next) {
 }
 
 module.exports = {
+  isPathAbsolute,
   isPathF,
   isPathR,
   isPathW,

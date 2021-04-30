@@ -144,8 +144,8 @@ class Formatter {
   getConfigPath = (filePath, configs) => {
     let configPath;
     configs.some((configFileName) => {
-      if (configFileName.startsWith("/") || configFileName.startsWith("~")) {
-        configPath = untildify(configFileName.trim());
+      if (helpers.isPathAbsolute(configFileName)) {
+        configPath = configFileName;
       } else {
         configPath = helpers.findFileInRepo(filePath, configFileName);
       }
@@ -177,9 +177,8 @@ class Formatter {
 
   isConfigsValid = (configs) => {
     return configs.every((configFileName) => {
-      if (configFileName.startsWith("/") || configFileName.startsWith("~")) {
-        const globalConfig = untildify(configFileName.trim());
-        if (helpers.isPathR(globalConfig)) {
+      if (helpers.isPathAbsolute(configFileName)) {
+        if (helpers.isPathR(configFileName)) {
           return true;
         }
         helpers.handleError(
@@ -200,7 +199,9 @@ class Formatter {
   };
 
   setLocalConfigs = (value) => {
-    const configs = _.compact(value);
+    const configs = _.compact(value).map((configFileName) => {
+      return untildify(configFileName.trim());
+    });
     if (_.isEqual(configs, this.localConfigs)) {
       return;
     }
@@ -213,7 +214,9 @@ class Formatter {
   };
 
   setGlobalConfigs = (value) => {
-    const configs = _.compact(value);
+    const configs = _.compact(value).map((configFileName) => {
+      return untildify(configFileName.trim());
+    });
     if (_.isEqual(configs, this.globalConfigs)) {
       return;
     }
