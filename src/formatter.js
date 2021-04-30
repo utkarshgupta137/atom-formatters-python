@@ -62,12 +62,12 @@ class Formatter {
     this.getLocalBinPath.cache.clear();
     this.localBins = localBins;
     if (
-      this.localBins.some((name) => {
-        if (isValidPath(name)) {
+      this.localBins.some((binaryFileName) => {
+        if (isValidPath(binaryFileName)) {
           return false;
         }
         helpers.handleError(
-          `'${name}' is not a valid file name.`,
+          `'${binaryFileName}' is not a valid path.`,
           `Invalid local binary path for ${this.name}`
         );
         return true;
@@ -176,23 +176,23 @@ class Formatter {
   );
 
   isConfigsValid = (configs) => {
-    return configs.every((name) => {
-      if (name.startsWith("/") || name.startsWith("~")) {
-        const globalConfig = untildify(name.trim());
+    return configs.every((configFileName) => {
+      if (configFileName.startsWith("/") || configFileName.startsWith("~")) {
+        const globalConfig = untildify(configFileName.trim());
         if (helpers.isPathR(globalConfig)) {
           return true;
         }
         helpers.handleError(
-          `'${globalConfig}' not found or not readable.`,
+          `'${configFileName}' not found or not readable.`,
           `Invalid global config path for ${this.name}`
         );
         return false;
       }
-      if (isValidPath(name)) {
+      if (isValidPath(configFileName)) {
         return true;
       }
       helpers.handleError(
-        `'${name}' is not a valid file name.`,
+        `'${configFileName}' is not a valid file path.`,
         `Invalid local configs for ${this.name}`
       );
       return false;
