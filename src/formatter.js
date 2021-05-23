@@ -240,12 +240,17 @@ class Formatter {
         next
       );
     } else if (this.binPath) {
+      let cwd;
+      if (this.binPath.includes("/shims")) {
+        cwd = helpers.findRepo(filePath);
+      }
       helpers.spawn(
         editor,
         this.binPath,
         this.getGlobalCmdArgs(filePath, buffer),
         buffer,
-        next
+        next,
+        cwd
       );
     } else {
       helpers.handleError(null, `Could not find binary for ${this.name}`);

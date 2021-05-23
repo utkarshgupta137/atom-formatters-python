@@ -96,13 +96,25 @@ function findFileInRepo(dirPath, filePath, executable = false) {
   );
 }
 
-function spawn(editor, command, args, buffer, next) {
+function findRepo(filePath) {
+  return findUp.sync(
+    (dir) => {
+      if (isPathF(path.resolve(dir, ".git"))) {
+        return dir;
+      }
+      return null;
+    },
+    { cwd: path.dirname(filePath), type: "directory" }
+  );
+}
+
+function spawn(editor, command, args, buffer, next, cwd) {
   let text = "";
   const curpos = editor.getCursorBufferPosition();
   const bp = new BufferedProcess({
     command,
     args,
-    options: { shell: true },
+    options: { shell: true, cwd },
     stdout: (out) => {
       text += out;
     },
@@ -132,6 +144,7 @@ module.exports = {
   callWithTimeout,
   getEditorPath,
   findFileInRepo,
+  findRepo,
   handleError,
   spawn,
 };
