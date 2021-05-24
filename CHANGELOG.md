@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.1](https://github.com/utkarshgupta137/atom-formatters-python/compare/v1.2.0...v1.2.1) (2021-05-24)
+
+
+### Bug Fixes
+
+* **pyenv:** provide project root to shell command for .pyenv(/shims/) paths ([9b4377f](https://github.com/utkarshgupta137/atom-formatters-python/commit/9b4377faf4c31639459c5dff40ca0317ad2f8262)), closes [#4](https://github.com/utkarshgupta137/atom-formatters-python/issues/4)
+
 ## [1.2.0](https://github.com/utkarshgupta137/atom-formatters-python/compare/v1.1.2...v1.2.0) (2021-04-30)
 
 
