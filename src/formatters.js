@@ -1,10 +1,10 @@
 const { CompositeDisposable } = require("atom");
 const _ = require("lodash");
 
-const config = require("./config.js");
-const { Formatter } = require("./formatter.js");
-const helpers = require("./helpers.js");
-const services = require("./services.js");
+const config = require("./config");
+const { Formatter } = require("./formatter");
+const helpers = require("./helpers");
+const services = require("./services");
 
 const formatters = new Map();
 const subscriptions = new CompositeDisposable();

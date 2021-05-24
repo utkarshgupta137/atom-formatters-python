@@ -1,4 +1,4 @@
-const helpers = require("./helpers.js");
+const helpers = require("./helpers");
 
 const formatters = ["autopep8", "black", "isort", "yapf"];
 

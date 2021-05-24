@@ -3,8 +3,8 @@ const isValidPath = require("is-valid-path");
 const _ = require("lodash");
 const untildify = require("untildify");
 
-const config = require("./config.js");
-const helpers = require("./helpers.js");
+const config = require("./config");
+const helpers = require("./helpers");
 
 class Formatter {
   constructor(name) {

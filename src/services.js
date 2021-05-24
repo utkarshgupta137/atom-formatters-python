@@ -1,5 +1,5 @@
-const config = require("./config.js");
-const helpers = require("./helpers.js");
+const config = require("./config");
+const helpers = require("./helpers");
 
 let busySignal;
 function consumeBusySignal(value) {
